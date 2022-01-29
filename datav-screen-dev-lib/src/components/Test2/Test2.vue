@@ -1,0 +1,22 @@
+<template>
+  <div class="test">{{message}}</div>
+</template>
+
+<script>
+  export default {
+    name: 'TestComponent2',
+    setup () {
+      const message = 'hello world! 2'
+
+      return {
+        message
+      }
+    }
+  }
+</script>
+
+<style lang="scss" scoped>
+.test {
+  color: blue;
+}
+</style>

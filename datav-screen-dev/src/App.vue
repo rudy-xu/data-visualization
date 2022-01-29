@@ -1,9 +1,15 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <div>
+    <div id="nav">
+      <router-link to="/">Home</router-link> |
+      <router-link to="/about">About</router-link> |
+      <router-link to="/Test">Test</router-link>
+    </div>
+    <test-component1/>
+    <test-component2/>
+    <test-component3/>
+    <router-view/>
   </div>
-  <router-view/>
 </template>
 
 <style>
