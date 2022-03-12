@@ -6,7 +6,7 @@
   export default {
     name: 'TestComponent1',
     setup () {
-      const message = 'hello world! 1'
+      const message = 'hello world! 2'
 
       return {
         message
