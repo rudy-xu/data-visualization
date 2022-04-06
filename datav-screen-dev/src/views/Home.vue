@@ -5,7 +5,9 @@
     </loading>
     <container :options="{width: 3840, height: 2160}" v-else>
 
-      <div class="header">111</div>
+      <div class="header">
+        <top-header />
+      </div>
       <div class="separator">222</div>
 
       <div class="center">
@@ -43,8 +45,13 @@
 
 <script>
 import { ref, onMounted } from 'vue';
+import TopHeader from '../components/top-header/index.vue';
+
 export default {
   name: 'Home',
+  components: {
+    TopHeader
+  },
   setup () {
     const loading = ref(false);
 
@@ -85,7 +92,6 @@ export default {
     .header {
       width: 100%;
       height: 167px;
-      background: yellow;
     }
 
     .separator {

@@ -1,85 +1,6 @@
 # data-visualization
 charts
 [TOC]
-* [vue-rfcs(vue 的一些提案)](https://github.com/vuejs/rfcs)
-* [composition-api](https://github.com/vuejs/composition-api)
-  * 一组低侵入式, 函数式的 API，使得我们能够更灵活地**组合**组件的逻辑
-  * 路由问题
-    * `const {ctx, proxy } = getCurrentInstance()`
-      * ctx 中没有路由属性 - **需要使用 proxy.$router**
-* Vue3 - setup
-  * vue3中得`setup`是无法直接获取到 `props`中得值得，需要通过参数 `ctx`
-    ```js
-    props: {
-      name: String
-    },
-    setup(ctx) {
-      const iconName = `#${ctx.name}`
-
-      return {
-        iconName
-      }
-    }
-    ```
-
-* 获取 DOM
-  * `getElementById`
-  * 利用`ref, onMounted, getCurrentInstance`
-
-* setup & ref
-  * 由于在执行 setup函数的时候，还没有执行 Created 生命周期方法，所以在 setup 函数中，无法使用 data 和 methods 的变量和方法
-  * 由于我们不能在 setup函数中使用 data 和 methods，所以 Vue 为了避免我们错误的使用，直接将 setup函数中的this修改成了 undefined
-  * setup函数只能是同步的不能是异步的
-  * **ref 是一个函数，它接受一个参数，返回的就是一个响应式对象**。我们初始化的这个 0 作为参数包裹到这个对象中去，在未来可以检测到改变并作出对应的相应
-* 打印 vue 提供了哪些API
-  ```js
-  console.log(require('vue'))
-  ```
-* **<font color="red">只要有绑定事件(比如：addEventListener)，就应该有销毁/解绑事件(removeEventListener)</font>**
-* **优化频繁渲染**
-  * 监听事件如果是在频繁的操作 DOM, 会带来一些性能上的消耗(**但这个性能消耗是可以接受的**)，如果需要进行优化，可以采用`debounce`, 即消除一些无效操作，比如放大屏幕，目的是放大到200%，则从100%到199%其实都是过程，无效的操作，可以采用`debounce`方法延迟操作的执行，从而达到消除一些无效的操作 - **弊端 - 相关内容会出现闪动，因为其会 先执行放大，再去缩小**
-  ```js
-  export function debounce(delay, callback) {
-    let task;
-    return function() {
-      clearTimeout(task);
-      task = setTimeout(() => {
-        callback.apply(this, arguments)
-      }, delay)
-    }
-  }
-  ```
-  * **MutationObserver - 监听 DOM 树属性的变化**
-    * 使用场景
-      * **当需要在`DOM`属性变更的时候操作一些事情，不建议来回传递函数实现，推荐利用`MutationObserver`实现解耦**
-    * 比如：需求 - 变更某个元素的`style`属性的时候，需要重新渲染页面
-    * 使用
-      ```js
-      const initMutationObserver = () => {
-        // create instance
-        const MutationObserver = window.MutationObserver;
-        observer = new MutationObserver(onResize);
-
-        // listen
-        observer.observe(dom, {
-          attributes: true,
-          attributeFilter: ['style'],
-          attributeOldValue: true
-        })
-      }
-
-      const removeMutationObserver = () => {
-        if(observer) {
-          observer.disconnect();
-          observer.takeRecords();
-          observer = null;
-        }
-      }
-      ```
-* **<font color="red">页面屏幕放大的同时尺寸是在缩小的</font>**
-
-* 如何将一个回调方法变成一个同步方法
-  * return - Promise - resolve
 ## 构建组件库 - `rolloup`
 #### 构建 Vue 组件库需要的插件
 ```js
@@ -295,6 +216,62 @@ const postcss = require('rollup-plugin-postcss') // 支持识别 css, sass等
   * Vue3 的项目还是使用 vue3 进行组件库开发
   * Vue2 的项目使用 vue2 进行组件库开发
 
+***********************
+# 数据可视化解决方案
+## 常见的有
+* 第一梯队
+  * HighCharts
+  * Echarts
+  * AntV
+* 相对更底层一点
+  * **three.js**
+    * 主要用于`3D`绘制
+    * **其是一个基于`WebGL`的`JavaScript 3D`图形库**
+  * **zrender**
+    * 其是一个二维绘图引擎，提供`canvas, SVG, VML`等多种渲染方式
+    * **对`canvas`进行底层封装，是`Echarts`的渲染器**
+  * **d3**
+    * 主要用于矢量图绘制
+    * 其是一个`JavaScript`图形库，基于`Canvas, Svg, HTML`
+    * **工作方式是，拿到数据后去更新`DOM`的方式**
+* 更进一步 (浏览器提供的一些底层框架)
+  * **Canvas**
+    *  HTML5的新特性， 其是一张画布，允许通过`JavaScript`绘制图形
+    * 绘制的图形不是 `DOM` 元素，无法选中或者修改`DOM`元素去修改属性
+  * **Svg**
+    * 基于`XML`的图像文件格式
+    * **更适合于需要缩放的图形 - 比如图标**
+    * **劣势**
+      * 开销比`Canvas`要大，尤其是动画场景
+  * **WebGL**
+    * 其是一种`3D`绘图协议，可以为`HTML5 的 Canvas`提供硬件`3D`加速渲染
+    * 使得`Web`开发人员**可以借助系统显卡在浏览器中流畅地展示 3D 场景和模型**
+  * **HTML**
+* 再下面就是 - Chrome
+* Chrome 下面就是
+  * **Skia**
+    * Chrome 和 Android 底层`2D`绘图引擎
+  * **OpenGL**
+    * Open Graphics Library - 跨平台
+    * `2D, 3D`图形渲染库
+  * **note: 一般使用 C++ 直接和硬件进行通讯**
+## Canvas
+* HTML5的新特性， 其是一张画布，允许通过`JavaScript`绘制图形
+* 绘制的图形不是 `DOM` 元素，无法选中或者修改`DOM`元素去修改属性
+## SVG (Scalable Vector Graphics) - 可缩放的矢量图形
+* 基于`XML`的图像文件格式
+* 更适合于需要缩放的图形 - 比如图标
+* 劣势
+  * 开销比`Canvas`要大，尤其是动画场景
+## WebGL(Web Graphocs Library)
+* 其是一种`3D`绘图协议，可以为`HTML5 的 Canvas`提供硬件`3D`加速渲染，从而使得`Web`开发人员**可以借助系统显卡在浏览器中流畅地展示 3D 场景和模型**
+## Zrender
+* 其是一个二维绘图引擎，提供`canvas, SVG, VML`等多种渲染方式，也是`Echarts`的渲染器
+## D3 (Data Driven Documents)
+* 其是一个`JavaScript`图形库，基于`Canvas, Svg, HTML`
+* 工作方式是，拿到数据后去更新`DOM`的方式
+## Three.js
+* 其是一个基于`WebGL`的`JavaScript 3D`图形库
 **************************
 # SVG
 * SVG 特性 - 是一个 DOM 形式，可以很好的和 CSS 进行结合，像 `canvas` 是无法直接和 DOM 结合
@@ -304,6 +281,18 @@ const postcss = require('rollup-plugin-postcss') // 支持识别 css, sass等
 * 优势
   * svg 使用 `xml`格式 - 体积较小
   * 使用灵活 - 即可以通过 `style` 修改 icon 的一些属性
+* 属性
+  * `fill` - 设置内部颜色
+    * `fill="none"` - 跟随父类颜色
+    * `fill="red"`
+    * `fill-opacity="0.5"` - 不透明度
+
+  * `stroke` - 设置轮廓，线条相关属性
+    * `stroke="red"`
+    * `stroke-width="8"`
+    * `stroke-dasharray="[...]"`
+    * `stroke-linecap="round"`
+    * `stroke-opacity`
 * 案例
 ```html
   <svg width="100px" height="100px">
@@ -315,8 +304,8 @@ const postcss = require('rollup-plugin-postcss') // 支持识别 css, sass等
 ## 矩形
 * `<rect>`
 * `<path>`
-  * `Mx y / mx y` - "Move to"，两个参数分别是：需要移动到的点的x轴和y轴的坐标
-  * `Lx y / dx dy` - "Line to"，当前位置和新位置（L前面画笔所在的点）之间画一条线段
+  * `Mx y / mx y` - "Move to / 移动画笔位置，但是不画线"，两个参数分别是：需要移动到的点的x轴和y轴的坐标
+  * `Lx y / dx dy` - "Line to / 画线"，当前位置和新位置（L前面画笔所在的点）之间画一条线段
   * `Z / z` - 当前点画一条直线到路径的起点
 
 ## viewport 和 viewBox
@@ -469,57 +458,55 @@ const postcss = require('rollup-plugin-postcss') // 支持识别 css, sass等
 
 #### css3 中得动画
 * **过度动画** - `transition` - 某一个位置移动到另一个位置的动画
-```css
-.line {
-  stroke-dasharray: 400;
-  stroke-dashoffset: 400;
-  transition: stroke-dashoffset .5s ease-out;
-}
-```
+  ```css
+  .line {
+    stroke-dasharray: 400;
+    stroke-dashoffset: 400;
+    transition: stroke-dashoffset .5s ease-out;
+  }
+  ```
 
 * **补间动画** - `@keyframes & animation`给出起始和结束状态，中间状态由 css 帮忙补充
-```css
-.circle {
-  // 定义动画
-  // calss name
-  // 时间
-  // linear - 匀速
-  // infinite - 无限循环
-  animation: circle 5s linear infinite;
+  ```css
+  .circle {
+    // 定义动画
+    // (calssName) (时间) (linear - 匀速) (infinite - 无限循环)
+    animation: circle 5s linear infinite;
 
-  // forward - 保持状态，不回归初始状态
-  animation: circle 5s linear 1 forwards;
-}
-
-@keyframes circle {
-  from {
-    stroke-dasharray: 0 1131;
+    // forward - 保持状态，不回归初始状态
+    animation: circle 5s linear 1 forwards;
   }
 
-  to {
-    stroke-dasharray: 1131 0;
-  }
+  @keyframes circle {
+    from {
+      stroke-dasharray: 0 1131;
+    }
 
-  /* 0% {
-    stroke-dasharray: 0 1131;
-  }
+    to {
+      stroke-dasharray: 1131 0;
+    }
 
-  50% {
-    stroke-dasharray: 1131 0;
-  }
+    /* 0% {
+      stroke-dasharray: 0 1131;
+    }
 
-  100% {
-    stroke-dasharray: 1131 0;
-  } */
-}
-```
+    50% {
+      stroke-dasharray: 1131 0;
+    }
+
+    100% {
+      stroke-dasharray: 1131 0;
+    } */
+  }
+  ```
 
 #### LOGO 描边
 * 获取 path 长度
 ```js
-const path = document.getElementById('');
+const path = document.getElementById('xxx');
 const pathLength = path.getTotalLength();
 ```
+* 利用 css3 补间动画
 
 #### 2008提出 - SMIL (Synchrinized Multimedia Integration Language)
 * 通过 HTML 标签实现动画效果
@@ -883,6 +870,116 @@ const chart = echarts.init(chartDom, 'light', { renderer: 'SVG'});
     ```
 * 多坐标系 - 一个画布中绘画出多张图
 ![alt](./imgs/multiCoord.png)
+***********************
+# Vue 3
+## Vue3.x 生命周期变化
+```js
+beforeCreate -> setup()
+
+created -> setup()
+
+beforeMount -> onBeforeMount
+
+mounted -> onMounted
+
+beforeUpdate -> onBeforeUpdate
+
+updated -> onUpdated
+
+beforeDestroy -> onBeforeUnmount
+
+destroyed -> onUnmounted
+
+errorCaptured -> onErrorCaptured
+
+// 新增的以下2个方便调试 debug 的回调钩子：
+
+onRenderTracked
+
+onRenderTriggered
+```
+## vue-rfcs(vue 的一些提案)
+* [官方链接](https://github.com/vuejs/rfcs)
+## composition-api
+* [官方链接](https://github.com/vuejs/composition-api)
+  * 一组低侵入式, 函数式的 API，使得我们能够更灵活地**组合**组件的逻辑
+  * 路由问题
+    * `const {ctx, proxy } = getCurrentInstance()`
+      * ctx 中没有路由属性 - **需要使用 proxy.$router**
+## Vue3 - setup
+* vue3中得`setup`是无法直接获取到 `props`中得值得，需要通过参数 `ctx`
+  ```js
+  props: {
+    name: String
+  },
+  setup(ctx) {
+    const iconName = `#${ctx.name}`
+
+    return {
+      iconName
+    }
+  }
+  ```
+
+## 获取 DOM
+  * `getElementById`
+  * 利用`ref, onMounted, getCurrentInstance`
+
+## setup & ref
+  * 由于在执行 setup函数的时候，还没有执行 Created 生命周期方法，所以在 setup 函数中，无法使用 data 和 methods 的变量和方法
+  * 由于我们不能在 setup函数中使用 data 和 methods，所以 Vue 为了避免我们错误的使用，直接将 setup函数中的this修改成了 undefined
+  * setup函数只能是同步的不能是异步的
+  * **ref 是一个函数，它接受一个参数，返回的就是一个响应式对象**。我们初始化的这个 0 作为参数包裹到这个对象中去，在未来可以检测到改变并作出对应的相应
+## 打印 vue 提供了哪些API
+  ```js
+  console.log(require('vue'))
+  ```
+**<font color="red">只要有绑定事件(比如：addEventListener)，就应该有销毁/解绑事件(removeEventListener)</font>**
+## 优化频繁渲染
+* 监听事件如果是在频繁的操作 DOM, 会带来一些性能上的消耗(**但这个性能消耗是可以接受的**)，如果需要进行优化，可以采用`debounce`, 即消除一些无效操作，比如放大屏幕，目的是放大到200%，则从100%到199%其实都是过程，无效的操作，可以采用`debounce`方法延迟操作的执行，从而达到消除一些无效的操作 - **弊端 - 相关内容会出现闪动，因为其会 先执行放大，再去缩小**
+  ```js
+  export function debounce(delay, callback) {
+    let task;
+    return function() {
+      clearTimeout(task);
+      task = setTimeout(() => {
+        callback.apply(this, arguments)
+      }, delay)
+    }
+  }
+  ```
+* **MutationObserver - 监听 DOM 树属性的变化**
+  * 使用场景
+    * **当需要在`DOM`属性变更的时候操作一些事情，不建议来回传递函数实现，推荐利用`MutationObserver`实现解耦**
+  * 比如：需求 - 变更某个元素的`style`属性的时候，需要重新渲染页面
+  * 使用
+    ```js
+    const initMutationObserver = () => {
+      // create instance
+      const MutationObserver = window.MutationObserver;
+      observer = new MutationObserver(onResize);
+
+      // listen
+      observer.observe(dom, {
+        attributes: true,
+        attributeFilter: ['style'],
+        attributeOldValue: true
+      })
+    }
+
+    const removeMutationObserver = () => {
+      if(observer) {
+        observer.disconnect();
+        observer.takeRecords();
+        observer = null;
+      }
+    }
+    ```
+* **<font color="red">页面屏幕放大的同时尺寸是在缩小的</font>**
+
+* 如何将一个回调方法变成一个同步方法
+  * return - Promise - resolve
+
 ***********************
 * [uuid](https://www.npmjs.com/package/uuid)
   ```sh
