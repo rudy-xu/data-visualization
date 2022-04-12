@@ -457,7 +457,7 @@ const postcss = require('rollup-plugin-postcss') // 支持识别 css, sass等
 ```
 
 #### css3 中得动画
-* **过度动画** - `transition` - 某一个位置移动到另一个位置的动画
+* **过度动画** - `transition` - 某一个位置移动到另一个位置的动画 **(对应属性值改变会有动画)**
   ```css
   .line {
     stroke-dasharray: 400;
@@ -980,6 +980,24 @@ onRenderTriggered
 * 如何将一个回调方法变成一个同步方法
   * return - Promise - resolve
 
+## 滚动列表
+#### 实现思路
+```js
+/**
+ * 列表动画展示
+ * 实现原理
+ *   - 利用 css3 的 transition 实现
+ *   - 改变 消失和出现的行 的高度，即可以出现动画效果
+ * 实现步骤
+ *  0.将数据头尾连接，形成轮询的效果(滚动播出) --- [a, b, c, d, e, f]  ->  [c, d, e, f, a, b]
+ *  1. 将所有行的高度还原
+ *  2. 设置高度消失时间，要和 transiton 的时间匹配
+ *  3. 将 stepNum 行的高度设置为 0
+ *  4. 修改 currentIndex 值
+ *
+ */
+```
+
 ***********************
 * [uuid](https://www.npmjs.com/package/uuid)
   ```sh
@@ -1003,5 +1021,53 @@ onRenderTriggered
   ```
 ![alt](./imgs/css-border.png)
 
-* 一维数组拷贝 `...`
+* 一维数组深拷贝 `...`
 * [`reset css` - css 初始化](https://meyerweb.com/eric/tools/css/reset/)
+* 数组首位插入元素
+  * `Array.unshit('xxx', '$$$')`
+* 数组末尾插入元素
+  * `Array.push()`
+
+* `props`
+  * **修改子组件的`props`会触发父组件重新渲染，为了减少无效渲染，可以先将父组件传入的值进行深拷贝，然后处理完后一次性赋值**
+  * `props`中属性类型为`Object`,如果有默认值需要给一个`function`
+    ```js
+    // 不含有默认值
+    props: {
+      test: Object
+    }
+
+    /*
+      含有默认值
+    */
+    props: {
+      test: {
+        type: Object,
+        default: () => ({
+          a: 'testa'
+        })
+      }
+    }
+
+    // 父类使用
+    <div
+      :test="test"
+    />
+
+    const test = ref({});
+
+    test.value = {
+      a: 'A'
+    }
+
+    return {
+      test
+    }
+    ```
+  * **子组件的`props`越来越多**
+    * 解决方案 - 合成一个`config`对象, 对象的默认值定义为一个`function`
+      * 也可以解决状态同名问题
+
+* 合并对象
+  * assign / lodash中的`assign`方法
+

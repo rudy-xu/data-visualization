@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <!-- <router-view/> -->
+    <router-view/>
 
     <!-- <div id="nav">
       <router-link to="/">Home</router-link> |
@@ -8,7 +8,7 @@
       <router-link to="/Test">Test</router-link>
     </div> -->
 
-    <test-svg />
+    <!-- <test-svg />
     <svg width="30" height="30" style="color: red">
       <use href="#more" />
     </svg>
@@ -21,7 +21,7 @@
     <Icon
       name="arrowRight"
       class="common-icon"
-    />
+    /> -->
 
     <!-- <test-component1/>
     <test-component2/>

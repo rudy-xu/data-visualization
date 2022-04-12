@@ -15,6 +15,7 @@ import Loading from './components/Loading/index';
 import FlyBox from './components/FlyBox/index';
 import Container from './components/Container/index';
 import MyLogo  from './components/MyLogo/index';
+import BaseScrollList from './components/BaseScrollList';
 
 export default function(Vue) {
   Vue.use(TestSvg)
@@ -27,4 +28,5 @@ export default function(Vue) {
   Vue.use(FlyBox)
   Vue.use(Container)
   Vue.use(MyLogo)
+  Vue.use(BaseScrollList)
 }

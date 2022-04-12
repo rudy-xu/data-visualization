@@ -33,7 +33,9 @@
             </div>
 
             <div class="right-bottom-right">
-              <div class="right-bottom-right1">b-555</div>
+              <div class="right-bottom-right1">
+                <scroll-list/>
+              </div>
               <div class="right-bottom-right2">b-666</div>
             </div>
           </div>
@@ -46,11 +48,13 @@
 <script>
 import { ref, onMounted } from 'vue';
 import TopHeader from '../components/top-header/index.vue';
+import ScrollList from '../components/Scroll-list/scrollList.vue';
 
 export default {
   name: 'Home',
   components: {
-    TopHeader
+    TopHeader,
+    ScrollList
   },
   setup () {
     const loading = ref(false);
@@ -196,6 +200,7 @@ export default {
             flex-direction: column;
             justify-content: space-between;
             margin-left: 10px;
+            margin-right: 20px;
 
             .right-bottom-right1 {
               width: 100%;
