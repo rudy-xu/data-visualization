@@ -1,6 +1,10 @@
 # data-visualization
-charts
+
 [TOC]
+
+## Demo
+![data-visualization](./imgs/data-visualization.gif)
+
 ## 构建组件库 - `rolloup`
 #### 构建 Vue 组件库需要的插件
 ```js
